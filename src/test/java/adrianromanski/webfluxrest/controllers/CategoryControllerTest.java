@@ -34,8 +34,8 @@ public class CategoryControllerTest {
                 .willReturn(Flux.just(Category.builder().description("Cat1").build(),
                 Category.builder().description("Cat2").build()));
 
-        webTestClient.get().
-                uri("/categories")
+        webTestClient.get()
+                .uri("/categories")
                 .exchange()
                 .expectBodyList(Category.class)
                 .hasSize(2);
