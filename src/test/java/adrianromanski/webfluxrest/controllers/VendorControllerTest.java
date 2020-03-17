@@ -6,11 +6,13 @@ import adrianromanski.webfluxrest.repositories.VendorRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 public class VendorControllerTest {
@@ -49,5 +51,20 @@ public class VendorControllerTest {
                 .uri("/vendors/someID")
                 .exchange()
                 .expectBody(Vendor.class);
+    }
+
+    @Test
+    public void createVendor() {
+        given(vendorRepository.saveAll(any(Publisher.class)))
+                .willReturn(Flux.just(Vendor.builder().build()));
+
+        Mono<Vendor> vendorToSave = Mono.just(Vendor.builder().firstName("Walter").lastName("White").build());
+
+        webTestClient.post()
+                .uri("/vendors")
+                .body(vendorToSave, Vendor.class)
+                .exchange()
+                .expectStatus()
+                .isCreated();
     }
 }
