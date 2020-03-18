@@ -1,7 +1,6 @@
 package adrianromanski.webfluxrest.controllers;
 
 import adrianromanski.webfluxrest.domain.Vendor;
-import adrianromanski.webfluxrest.repositories.CategoryRepository;
 import adrianromanski.webfluxrest.repositories.VendorRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,5 +65,19 @@ public class VendorControllerTest {
                 .exchange()
                 .expectStatus()
                 .isCreated();
+    }
+
+    @Test
+    public void testUpdate() {
+        given(vendorRepository.save(any(Vendor.class))).willReturn(Mono.just(Vendor.builder().build()));
+
+        Mono<Vendor> vendorToSave = Mono.just(Vendor.builder().firstName("Chuck").lastName("Norris").build());
+
+        webTestClient.put()
+                .uri("/vendors/someid")
+                .body(vendorToSave, Vendor.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
     }
 }
